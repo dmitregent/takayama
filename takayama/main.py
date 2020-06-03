@@ -27,5 +27,5 @@ def group_agg(group_by, agg, filtering, limit):
 
 
 @app.teardown_appcontext
-def shutdown_session():
+def shutdown_session(exception=None):
     db_session.remove()
