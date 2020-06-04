@@ -1,9 +1,12 @@
 from sqlalchemy import desc, func
-
 from takayama.models import Scrobble
+from takayama.tmpd import TakayamaMpdClient
 
 
-def engine(group_by, agg, filtering, limit):
+def engine(group_by, agg, filtering, limit, options_string):
+    options = options_string.split(',')
+    mpd_is_enabled = 'mpd' in options
+
     q = Scrobble.query
     filters_and = filtering.split(',')
     filters = [f.split('=') for f in filters_and]
@@ -46,4 +49,13 @@ def engine(group_by, agg, filtering, limit):
     if aggregate_expressions:
         q = q.order_by(*[desc(a) for a in aggregate_expressions])
 
-    return q.limit(limit).all()
+    scrobbles = q.limit(limit).all()
+
+    if mpd_is_enabled:
+        with TakayamaMpdClient() as takayama_mpd:
+            takayama_mpd.clear_playlist()
+            for scrobble in scrobbles:
+                if hasattr(scrobble, 'name') and hasattr(scrobble, 'artist') and scrobble.name and scrobble.artist:
+                    takayama_mpd.add_tracks_by_artist(scrobble.artist, scrobble.name)
+
+    return scrobbles

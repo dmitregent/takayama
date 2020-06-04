@@ -10,6 +10,7 @@ parso==0.7.0
 promise==2.3
 psycopg2==2.8.5
 pyparsing==2.4.7
+python-mpd2==1.0.0
 Rx==1.6.1
 singledispatch==3.4.0.3
 six==1.14.0

@@ -17,8 +17,9 @@ def hello():
 
 
 @app.route('/groupBy/<group_by>/agg/<agg>/filter/<filtering>/limit/<limit>')
-def group_agg(group_by, agg, filtering, limit):
-    scrobbles = engine(group_by, agg, filtering, limit)
+@app.route('/groupBy/<group_by>/agg/<agg>/filter/<filtering>/limit/<limit>/options/<options>')
+def group_agg(group_by, agg, filtering, limit, options=''):
+    scrobbles = engine(group_by, agg, filtering, limit, options)
     try:
         result = jsonify(scrobbles)
     except TypeError:
